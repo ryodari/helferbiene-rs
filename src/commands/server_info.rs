@@ -1,6 +1,8 @@
 use serenity::{
     all::{
-        CommandInteraction, CommandOptionType, Context, CreateCommand, CreateCommandOption, CreateEmbed, CreateInteractionResponse, CreateInteractionResponseMessage, EditInteractionResponse, ResolvedOption, ResolvedValue
+        CommandInteraction, CommandOptionType, Context, CreateCommand, CreateCommandOption,
+        CreateEmbed, CreateInteractionResponse, CreateInteractionResponseMessage,
+        EditInteractionResponse, ResolvedOption, ResolvedValue,
     },
     async_trait,
 };
@@ -52,9 +54,11 @@ impl Command for ServerInfoCommand {
                 value: ResolvedValue::String(host),
                 ..
             }) => host,
-            _ => return Ok(Some(CreateInteractionResponse::Message(
+            _ => {
+                return Ok(Some(CreateInteractionResponse::Message(
                     CreateInteractionResponseMessage::new().content("Please provide a host"),
-                ))),
+                )))
+            }
         };
 
         let port: u16 = match options.iter().find(|o| o.name == "port") {
@@ -74,8 +78,10 @@ impl Command for ServerInfoCommand {
         info.favicon = Some("ignored".into());
 
         let pretty = serde_json::to_string_pretty(&info).unwrap();
-        
-        let embed = CreateEmbed::new().title(format!("{}:{}", host, port)).description(format!("```json\n{}```", pretty));
+
+        let embed = CreateEmbed::new()
+            .title(format!("{}:{}", host, port))
+            .description(format!("```json\n{}```", pretty));
 
         let data = EditInteractionResponse::new().add_embed(embed);
 

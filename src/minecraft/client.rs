@@ -38,7 +38,8 @@ impl Client {
             }
         };
 
-        let stream = std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_secs(5))?;
+        let stream =
+            std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_secs(5))?;
         stream.set_nonblocking(true)?;
 
         Ok(TcpStream::from_std(stream)?)

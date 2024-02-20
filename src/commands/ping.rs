@@ -20,7 +20,11 @@ impl Command for PingCommand {
         CreateCommand::new(self.name()).description("A ping command")
     }
 
-    async fn run(&self, _ctx: &Context, _command: &CommandInteraction) -> serenity::Result<Option<CreateInteractionResponse>> {
+    async fn run(
+        &self,
+        _ctx: &Context,
+        _command: &CommandInteraction,
+    ) -> serenity::Result<Option<CreateInteractionResponse>> {
         let data = CreateInteractionResponseMessage::new().content("Pong!");
 
         Ok(Some(CreateInteractionResponse::Message(data)))
