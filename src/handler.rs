@@ -1,18 +1,14 @@
-use std::borrow::Borrow;
-use std::env;
-
 use crate::commands::COMMANDS;
 use serenity::all::Color;
 use serenity::all::Command;
 use serenity::all::CreateEmbed;
 use serenity::all::CreateInteractionResponse;
 use serenity::all::CreateInteractionResponseMessage;
-use serenity::all::GuildId;
+
 use serenity::all::Interaction;
 use serenity::all::Ready;
 use serenity::async_trait;
 use serenity::prelude::*;
-use tokio::sync::Mutex;
 
 pub struct Handler;
 
@@ -58,8 +54,19 @@ impl EventHandler for Handler {
 
         for (idx, cmd) in COMMANDS.iter().enumerate() {
             match Command::create_global_command(&ctx.http, cmd.register()).await {
-                Ok(_) => log::info!("Registered command \"{}\" ({}/{})", cmd.name(), idx + 1, COMMANDS.len()),
-                Err(e) => log::error!("Failed to register command \"{}\" ({}/{}): {}", cmd.name(), idx + 1, COMMANDS.len(), e),
+                Ok(_) => log::info!(
+                    "Registered command \"{}\" ({}/{})",
+                    cmd.name(),
+                    idx + 1,
+                    COMMANDS.len()
+                ),
+                Err(e) => log::error!(
+                    "Failed to register command \"{}\" ({}/{}): {}",
+                    cmd.name(),
+                    idx + 1,
+                    COMMANDS.len(),
+                    e
+                ),
             };
         }
     }

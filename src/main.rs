@@ -1,9 +1,7 @@
 use std::env;
 
 use helferbiene_rs::handler::Handler;
-use serenity::framework::standard::macros::{command, group};
-use serenity::framework::standard::{CommandResult, Configuration, StandardFramework};
-use serenity::model::channel::Message;
+
 use serenity::prelude::*;
 
 #[tokio::main]
