@@ -1,6 +1,8 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub enum TextComponentType {
     Text,
@@ -11,7 +13,8 @@ pub enum TextComponentType {
     Nbt,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum TextComponentClickAction {
     OpenUrl,
@@ -23,14 +26,16 @@ pub enum TextComponentClickAction {
     CopyToClipboard,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TextComponentClick {
     pub action: TextComponentClickAction,
     pub value: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct TextComponent {
     #[serde(rename = "type")]

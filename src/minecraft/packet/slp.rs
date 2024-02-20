@@ -4,7 +4,8 @@ use crate::minecraft::{text_component::TextComponent, varint::VarInt, varstring:
 
 use super::{Packet, PacketDecode, PacketEncode};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 
 pub struct SlpRequest;
 
@@ -32,21 +33,24 @@ impl Into<Vec<u8>> for SlpRequest {
 
 ///////
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpServerVersion {
     pub name: String,
     pub protocol: i32,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpServerPlayerSample {
     pub name: String,
     pub id: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpServerPlayers {
     pub max: i32,
@@ -54,21 +58,24 @@ pub struct SlpServerPlayers {
     pub sample: Option<Vec<SlpServerPlayerSample>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(untagged)]
 pub enum SlpServerDescription {
     Simple(String),
     Complex(TextComponent),
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpForgeModEntry {
     pub modid: String,
     pub version: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpForgeModInfo {
     // present on Forge servers
@@ -77,7 +84,8 @@ pub struct SlpForgeModInfo {
     pub mod_list: Vec<SlpForgeModEntry>,
 }
 
-#[derive(Deserialize, Debug)]
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct SlpResponse {
     pub version: SlpServerVersion,

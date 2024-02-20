@@ -5,6 +5,7 @@ use serenity::all::CreateEmbed;
 use serenity::all::CreateInteractionResponse;
 use serenity::all::CreateInteractionResponseMessage;
 
+use serenity::all::EditInteractionResponse;
 use serenity::all::Interaction;
 use serenity::all::Ready;
 use serenity::async_trait;
@@ -20,12 +21,36 @@ impl EventHandler for Handler {
 
             let command_name = command.data.name.as_str();
 
-            for cmd in COMMANDS {
-                if cmd.name() != command_name {
-                    continue;
-                }
+            let handler = match COMMANDS.iter().find(|h| h.name() == command_name) {
+                Some(h) => h,
+                None => {
+                    log::warn!("Couldn't find handler for command: \"{}\"", command_name);
 
-                if let Err(e) = cmd.run(&ctx, &command).await {
+                    let embed = CreateEmbed::new()
+                        .title("Error")
+                        .description("Invalid command.")
+                        .color(Color::from_rgb(255, 0, 0));
+
+                    _ = command
+                        .create_response(
+                            ctx.http(),
+                            CreateInteractionResponse::Message(
+                                CreateInteractionResponseMessage::new().add_embed(embed),
+                            ),
+                        )
+                        .await;
+
+                    return;
+                }
+            };
+
+            match handler.run(&ctx, &command).await {
+                Ok(Some(resp)) => {
+                    if let Err(e) = command.create_response(&ctx.http, resp).await {
+                        log::error!("Couldn't respond to slash command: {}", e);
+                    }
+                }
+                Err(e) => {
                     log::error!("Executing command \"{}\" failed: {}", command_name, e);
 
                     let embed = CreateEmbed::new()
@@ -33,18 +58,31 @@ impl EventHandler for Handler {
                         .description("An error occured while executing the command.")
                         .color(Color::from_rgb(255, 0, 0));
 
-                    if let Err(e) = command
-                        .create_response(
-                            ctx.http(),
-                            CreateInteractionResponse::Message(
-                                CreateInteractionResponseMessage::new().add_embed(embed),
-                            ),
-                        )
-                        .await
-                    {
+                    let res = match command.get_response(&ctx.http).await.is_ok() {
+                        true => command
+                            .edit_response(
+                                ctx.http(),
+                                EditInteractionResponse::new().add_embed(embed),
+                            )
+                            .await
+                            .map(|_| ()),
+                        false => {
+                            command
+                                .create_response(
+                                    ctx.http(),
+                                    CreateInteractionResponse::Message(
+                                        CreateInteractionResponseMessage::new().add_embed(embed),
+                                    ),
+                                )
+                                .await
+                        }
+                    };
+
+                    if let Err(e) = res {
                         log::error!("Couldn't respond to slash command: {}", e);
                     }
                 }
+                _ => {}
             }
         }
     }

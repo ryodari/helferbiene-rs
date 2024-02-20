@@ -2,7 +2,7 @@ use std::io::{self, Cursor};
 
 use tokio::{
     io::AsyncWriteExt,
-    net::{self, TcpSocket, TcpStream},
+    net::{self, TcpStream},
 };
 
 use crate::minecraft::{
@@ -38,12 +38,13 @@ impl Client {
             }
         };
 
-        let stream = TcpSocket::new_v4()?.connect(addr).await?;
+        let stream = std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_secs(5))?;
+        stream.set_nonblocking(true)?;
 
-        Ok(stream)
+        Ok(TcpStream::from_std(stream)?)
     }
 
-    pub async fn status(&mut self) -> io::Result<SlpResponse> {
+    pub async fn status(&self) -> io::Result<SlpResponse> {
         let mut stream = self.connection().await?;
 
         {
