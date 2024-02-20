@@ -1,3 +1,5 @@
+use std::io;
+
 use crate::commands::COMMANDS;
 use serenity::all::Color;
 use serenity::all::Command;
@@ -53,9 +55,17 @@ impl EventHandler for Handler {
                 Err(e) => {
                     log::error!("Executing command \"{}\" failed: {}", command_name, e);
 
+                    let description = match e {
+                        SerenityError::Io(e) => match e.kind() {
+                            io::ErrorKind::TimedOut => "Timed out.",
+                            _ => "An error occured while executing the command.",
+                        },
+                        _ => "An error occured while executing the command.",
+                    };
+
                     let embed = CreateEmbed::new()
                         .title("Error")
-                        .description("An error occured while executing the command.")
+                        .description(description)
                         .color(Color::from_rgb(255, 0, 0));
 
                     let res = match command.get_response(&ctx.http).await.is_ok() {
