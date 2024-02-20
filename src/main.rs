@@ -1,6 +1,6 @@
 use std::env;
 
-use helferbiene_rs::handler::Handler;
+use helferbiene_rs::{handler::Handler, minecraft};
 
 use serenity::prelude::*;
 
@@ -9,6 +9,10 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
 
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("helferbiene_rs=info"));
+
+    let mut client = minecraft::client::Client::new("gommehd.net".into(), 25565).await?;
+    let resp = client.status().await?;
+    log::info!("status: {:?}", resp);
 
     let token = env::var("BOT_TOKEN").expect("Please provide a valid bot token in ENV:BOT_TOKEN!");
 

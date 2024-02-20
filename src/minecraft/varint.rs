@@ -1,5 +1,6 @@
 use std::io::{self, Read};
 
+#[derive(Debug, PartialEq)]
 pub struct VarInt(pub i32);
 
 impl VarInt {
@@ -44,10 +45,10 @@ impl VarInt {
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut result = Vec::new();
-        let mut value = self.0;
+        let mut value = self.0 as u32;
 
         loop {
-            let mut byte = (value & Self::SEGMENT_BITS as i32) as u8;
+            let mut byte = (value & Self::SEGMENT_BITS as u32) as u8;
             value >>= 7;
             if value != 0 {
                 byte |= Self::CONTINUE_BIT;
