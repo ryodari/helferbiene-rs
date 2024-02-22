@@ -1,3 +1,4 @@
+pub mod activity;
 pub mod client;
 pub mod packet;
 pub mod text_component;
