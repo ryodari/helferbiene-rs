@@ -40,7 +40,7 @@ impl Activity {
 
             if let Err(e) = self
                 .update_activity(ActivityData::watching(format!(
-                    "{}/{}",
+                    "{}/{} players",
                     info.players.online, info.players.max
                 )))
                 .await
